@@ -1,0 +1,21 @@
+[project]
+name = "kf1-mods-installer-core"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Mythical-Github", email = "67753356+Mythical-Github@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "bs4>=0.0.2",
+    "pyjson5>=2.0.1",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+kf1-mods-installer-core = "kf1_mods_installer_core:main"
+
+[build-system]
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
