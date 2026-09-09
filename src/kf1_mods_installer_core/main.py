@@ -1,19 +1,15 @@
 import os
 import re
-import sys
 import shutil
 import subprocess
 import pyjson5 as json
-from zipfile import ZipFile
 
 import requests
 from bs4 import BeautifulSoup
 
-
-if getattr(sys, 'frozen', False):
-    script_dir = os.path.dirname(sys.executable)
-else:
-    script_dir  = os.path.dirname(os.path.abspath(__file__))
+from kf1_mods_installer_core import manager
+from kf1_mods_installer_core.tools import steamcmd, kf_temp_archive_extractor
+from kf1_mods_installer_core.settings import script_dir
 
 
 settings_path = f'{script_dir}/settings.json'
@@ -23,13 +19,10 @@ with open(settings_path, 'r') as file:
     settings = json.load(file, encoding='utf-8')
 
 
-archive_extractor_exe = f'{script_dir}/KFTempArchiveExtractor.exe'
-steam_cmd_dir = f'{script_dir}/steamcmd'
-steam_cmd_exe = f'{steam_cmd_dir}/steamcmd.exe'
-archive_dir = f'{script_dir}/KF Archive Files'
-
-
-steamcmd_url = 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip'
+archive_extractor_exe = str(kf_temp_archive_extractor.KfTempArchiveExtractorToolInfo(cache=manager.tools_cache).get_executable_path())
+steam_cmd_dir = str(steamcmd.SteamCmdToolInfo(cache=manager.tools_cache).get_tool_directory())
+steam_cmd_exe = str(steamcmd.SteamCmdToolInfo(cache=manager.tools_cache).get_executable_path())
+archive_dir = f'{str(kf_temp_archive_extractor.KfTempArchiveExtractorToolInfo(cache=manager.tools_cache).get_tool_directory())}/KF Archive Files'
 
 
 def find_bin_files(root_path):
@@ -76,22 +69,6 @@ def move_files_to_directories(files, settings):
             shutil.move(file_path, destination_path)
             print(f'File "{file_name}" moved to "{destination_path}"')
 
-
-def download_and_unzip_steamcmd():
-    os.makedirs(steam_cmd_dir, exist_ok=True)
-    response = requests.get(steamcmd_url)
-    zip_file_path = f'{steam_cmd_dir}/steamcmd.zip'
-
-    with open(zip_file_path, 'wb') as zip_file:
-        zip_file.write(response.content)
-
-    with ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(steam_cmd_dir)
-        
-    os.remove(zip_file_path)
-    
-    print('SteamCMD downloaded and unzipped successfully.')
-    os.chdir(steam_cmd_dir)
 
 def update_ini_file():
     with open(settings_path, 'r', encoding='utf-8') as settings_file:
@@ -141,6 +118,7 @@ def update_ini_file():
 
     with open(ini_full_path, 'w', encoding='latin-1') as ini_file:
         ini_file.writelines(ini_content)
+
 
 def get_subscription_ids():
     all_subscription_app_ids = []
@@ -240,6 +218,7 @@ def unpack_mod_archives():
 
 def move_mod_files():
     files_to_search = settings["dir_names_to_file_types"]
+    print(archive_dir)
     found_files = find_files_in_directory(archive_dir, files_to_search)
 
     if found_files:
@@ -249,9 +228,15 @@ def move_mod_files():
 
 
 def download_and_install_mods():
-    if not os.path.isfile(steam_cmd_exe):
-        download_and_unzip_steamcmd()
     update_ini_file()
     download_mod_archives()
     unpack_mod_archives()  
     move_mod_files()
+    shutil.rmtree(archive_dir)
+
+    
+
+def main():
+    '''This is just here for testing'''
+    # initilization.initilization()
+    # download_and_install_mods()

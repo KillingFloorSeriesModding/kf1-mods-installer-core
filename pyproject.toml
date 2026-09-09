@@ -11,11 +11,15 @@ dependencies = [
     "bs4>=0.0.2",
     "pyjson5>=2.0.1",
     "requests>=2.34.2",
+    "tempo-binary-tool-manager",
 ]
 
 [project.scripts]
-kf1-mods-installer-core = "kf1_mods_installer_core:main"
+kf1-mods-installer-core = "kf1_mods_installer_core.main:main"
 
 [build-system]
 requires = ["uv_build>=0.12.1,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.sources]
+tempo-binary-tool-manager = { git = "https://github.com/Tempo-Organization/tempo-binary-tool-manager" }
