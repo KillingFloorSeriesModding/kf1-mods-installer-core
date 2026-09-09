@@ -7,7 +7,7 @@ import pyjson5 as json
 import requests
 from bs4 import BeautifulSoup
 
-from kf1_mods_installer_core import manager
+from kf1_mods_installer_core import manager, initilization
 from kf1_mods_installer_core.tools import steamcmd, kf_temp_archive_extractor
 from kf1_mods_installer_core.settings import script_dir
 
@@ -228,6 +228,7 @@ def move_mod_files():
 
 
 def download_and_install_mods():
+    initilization.initilization()
     update_ini_file()
     download_mod_archives()
     unpack_mod_archives()  
